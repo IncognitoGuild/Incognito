@@ -28,32 +28,77 @@
         <select name="Class" required>
             <option value="" disabled selected>Select Class</option>
             <option value="ArchBishop">ArchBishop</option>
-			<option value="Shura">Shura</option>
+            <option value="Shura">Shura</option>
             <option value="Ranger">Ranger</option>
             <option value="Wanderer">Wanderer</option>
             <option value="Royal Guard">Royal Guard</option>
             <option value="Rune Knight">Rune Knight</option>
-			<option value="Shadow Chaser">Shadow Chaser</option>
-			<option value="Guillotine Cross">Guillotine Cross</option>
-			<option value="Sorcerer">Sorcerer</option>
-			<option value="Warlock">Warlock</option>
-			<option value="Mechanic">Mechanic</option>
-			<option value="Genetic">Genetic</option>
-			<option value="Minstrel">Minstrel</option>
-            </select><br>
+            <option value="Shadow Chaser">Shadow Chaser</option>
+            <option value="Guillotine Cross">Guillotine Cross</option>
+            <option value="Sorcerer">Sorcerer</option>
+            <option value="Warlock">Warlock</option>
+            <option value="Mechanic">Mechanic</option>
+            <option value="Genetic">Genetic</option>
+            <option value="Minstrel">Minstrel</option>
+        </select><br>
         <button type="submit">Register</button>
     </form>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyCmzVu66aE8Fz1V3JQ2o-gWXxoQ3nVXG5K2kPstsDId_UMuinZrPXnfmwLcOKWR973/exec'; //Will be generated in next step
         const form = document.forms['registrationForm'];
+        const submitButton = form.querySelector('button[type="submit"]');
+        const cooldownKey = 'lastRegistrationAttempt';
+        const cooldownTime = 10 * 1000; // 10 seconds (adjust as needed in milliseconds)
+
+        function checkCooldown() {
+            const lastAttempt = localStorage.getItem(cooldownKey);
+            if (lastAttempt && (Date.now() - parseInt(lastAttempt)) < cooldownTime) {
+                const remainingTime = cooldownTime - (Date.now() - parseInt(lastAttempt));
+                const remainingSeconds = Math.ceil(remainingTime / 1000);
+                submitButton.disabled = true;
+                submitButton.textContent = `Cooldown: ${remainingSeconds}s`;
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Register';
+                }, remainingTime);
+                return true; // Cooldown active
+            }
+            return false; // Cooldown not active
+        }
+
+        // Initial check on page load
+        checkCooldown();
 
         form.addEventListener('submit', e => {
             e.preventDefault();
+
+            if (checkCooldown()) {
+                alert('Please wait before submitting again.');
+                return;
+            }
+
+            // Disable button immediately after clicking
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-                .then(response => alert('Thank you! Your registration has been submitted.'))
-                .catch(error => console.error('Error!', error.message))
-        })
+                .then(response => {
+                    alert('Thank you! Your registration has been submitted.');
+                    localStorage.setItem(cooldownKey, Date.now()); // Set cooldown timestamp
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Register';
+                    form.reset(); // Optional: Clear the form
+                    // Re-check cooldown in case of very fast submissions
+                    checkCooldown();
+                })
+                .catch(error => {
+                    console.error('Error!', error.message);
+                    alert('An error occurred. Please try again later.');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Register';
+                });
+        });
     </script>
 </body>
 </html>
