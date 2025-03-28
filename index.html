@@ -17,6 +17,10 @@
             /* Your existing form styles */
         }
         /* Other styles */
+        #error-message {
+            color: red;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -42,14 +46,16 @@
             <option value="Minstrel">Minstrel</option>
         </select><br>
         <button type="submit">Register</button>
+        <div id="error-message"></div>
     </form>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyCmzVu66aE8Fz1V3JQ2o-gWXxoQ3nVXG5K2kPstsDId_UMuinZrPXnfmwLcOKWR973/exec'; //Will be generated in next step
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwfsQa8dZG_1PEWli4PuxiB7OUhrmM4KoRMmRTaudnIUAQ6-sK73C4l8aMn4AtkYCiu/exec';
         const form = document.forms['registrationForm'];
         const submitButton = form.querySelector('button[type="submit"]');
         const cooldownKey = 'lastRegistrationAttempt';
         const cooldownTime = 10 * 1000; // 10 seconds (adjust as needed in milliseconds)
+        const errorMessageDiv = document.getElementById('error-message'); // Get the error message div
 
         function checkCooldown() {
             const lastAttempt = localStorage.getItem(cooldownKey);
@@ -81,16 +87,27 @@
             // Disable button immediately after clicking
             submitButton.disabled = true;
             submitButton.textContent = 'Submitting...';
+            errorMessageDiv.textContent = ''; // Clear previous error messages
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-                .then(response => {
-                    alert('Thank you! Your registration has been submitted.');
-                    localStorage.setItem(cooldownKey, Date.now()); // Set cooldown timestamp
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Register';
-                    form.reset(); // Optional: Clear the form
-                    // Re-check cooldown in case of very fast submissions
-                    checkCooldown();
+                .then(response => response.json()) // Parse the response as JSON
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert('Thank you! Your registration has been submitted.');
+                        localStorage.setItem(cooldownKey, Date.now()); // Set cooldown timestamp
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Register';
+                        form.reset(); // Optional: Clear the form
+                        checkCooldown();
+                    } else if (data.result === 'duplicate') {
+                        errorMessageDiv.textContent = 'Error: Ingame Name already registered.';
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Register';
+                    } else {
+                        errorMessageDiv.textContent = 'An error occurred. Please try again later.';
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Register';
+                    }
                 })
                 .catch(error => {
                     console.error('Error!', error.message);
