@@ -22,20 +22,28 @@
         #member-list {
             margin-top: 20px;
             text-align: left;
-            width: 300px; /* Adjust width as needed */
+            width: 300px;
             margin-left: auto;
             margin-right: auto;
+            max-height: 200px; /* Set a maximum height */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 1px solid #ddd; /* Add a border for visual separation */
+            padding: 10px;
+            background-color: white; /* Add a background */
         }
         #member-list ul {
             list-style-type: none;
             padding: 0;
+            margin: 0; /* Remove default margin for consistent spacing */
         }
         #member-list li {
-            border: 1px solid #ddd;
             padding: 8px;
             margin-bottom: 5px;
-            background-color: white; /* Add a background for better visibility */
+            border-bottom: 1px solid #eee; /* Add a subtle divider between list items */
             text-align: center;
+        }
+        #member-list li:last-child {
+          border-bottom: none;
         }
     </style>
 </head>
@@ -85,11 +93,11 @@
         }
 
         function fetchMemberList() {
-            fetch(scriptURL + '?action=list') // Assuming your Google Apps Script has a 'list' action
+            fetch(scriptURL + '?action=list')
                 .then(response => response.json())
                 .then(data => {
                     if (data.result === 'success' && data.members) {
-                        membersList.innerHTML = ''; // Clear existing list
+                        membersList.innerHTML = '';
                         data.members.forEach(member => {
                             const listItem = document.createElement('li');
                             listItem.textContent = `${member.IngameName} - ${member.Class}`;
@@ -105,7 +113,6 @@
                 });
         }
 
-        // Fetch member list on page load
         fetchMemberList();
 
         form.addEventListener('submit', e => {
@@ -127,7 +134,7 @@
                         submitButton.textContent = 'Register';
                         form.reset();
                         checkCooldown();
-                        fetchMemberList(); // Refresh member list after successful registration
+                        fetchMemberList();
                     } else if (data.result === 'duplicate') {
                         errorMessageDiv.textContent = 'Error: Ingame Name already registered.';
                         submitButton.disabled = false;
