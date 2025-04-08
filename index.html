@@ -3,19 +3,17 @@
 <head>
     <title>Incognito Guild - Registration</title>
     <style>
-    body {
-        font-family: sans-serif;
-        text-align: center;
-        padding: 50px;
-        background-color: #E6E6FA;
-        color: #333;
-        background-image: url('Background.png'); /* Replace with your image path */
-        background-size: Cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-		/* Optional: */
-        /* background-attachment: fixed; */
-    }
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #E6E6FA;
+            color: #333;
+            background-image: url('Background.png'); /* Replace with your image path */
+            background-size: Cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
         h1 {
             color: #4A235A;
             margin-bottom: 20px;
@@ -152,10 +150,26 @@
         const membersList = document.getElementById('members');
 
         function checkCooldown() {
-            // ... (cooldown code remains the same) ...
+            const lastAttempt = localStorage.getItem(cooldownKey);
+            if (lastAttempt && Date.now() - lastAttempt < cooldownTime) {
+                const timeLeft = Math.ceil((cooldownTime - (Date.now() - lastAttempt)) / 1000);
+                submitButton.disabled = true;
+                submitButton.textContent = `Wait ${timeLeft}s`;
+                setTimeout(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Register';
+                }, cooldownTime - (Date.now() - lastAttempt));
+                return true;
+            }
+            return false;
+        }
+
+        function displayError(message) {
+            errorMessageDiv.textContent = message;
         }
 
         function fetchMemberList() {
+            membersList.innerHTML = '<li>Loading...</li>';
             fetch(scriptURL + '?action=list')
                 .then(response => response.json())
                 .then(data => {
@@ -182,9 +196,12 @@
             e.preventDefault();
 
             if (checkCooldown()) {
-                alert('Please wait before submitting again.');
+                displayError('Please wait before submitting again.');
                 return;
             }
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
 
             fetch(scriptURL, { method: 'POST', body: new FormData(form) })
                 .then(response => response.json())
@@ -192,23 +209,22 @@
                     if (data.result === 'success') {
                         alert('Thank you! Your registration has been submitted.');
                         localStorage.setItem(cooldownKey, Date.now());
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Register';
                         form.reset();
-                        checkCooldown();
                         fetchMemberList();
                     } else if (data.result === 'duplicate') {
-                        errorMessageDiv.textContent = 'Error: Ingame Name already registered.';
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Register';
+                        displayError('Error: Ingame Name already registered.');
                     } else {
-                        errorMessageDiv.textContent = 'An error occurred. Please try again later.';
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Register';
+                        displayError('An error occurred. Please try again later.');
                     }
                 })
                 .catch(error => {
-                    // ... (error handling remains the same) ...
+                    console.error('Registration error:', error);
+                    displayError('Network error. Please try again.');
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Register';
+                    checkCooldown();
                 });
         });
 
@@ -217,28 +233,31 @@
             const newClass = document.querySelector('select[name="Class"]').value;
 
             if (ingameName && newClass) {
-                fetch(scriptURL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'updateClass',
-                        IngameName: ingameName,
-                        Class: newClass
+                if (confirm("Are you sure you want to update the class?")) {
+                    fetch(scriptURL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'updateClass',
+                            IngameName: ingameName,
+                            Class: newClass
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        alert('Class updated successfully!');
-                        fetchMemberList();
-                    } else {
-                        alert('Failed to update class. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error updating class:', error);
-                    alert('An error occurred. Please try again later.');
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.result === 'success') {
+                            alert('Class updated successfully!');
+                            fetchMemberList();
+                            form.reset();
+                        } else {
+                            alert('Failed to update class. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating class:', error);
+                        alert('An error occurred. Please try again later.');
+                    });
+                }
             } else {
                 alert('Please enter both Ingame Name and select a Class.');
             }
