@@ -3,17 +3,55 @@
 <head>
     <title>Incognito Guild - Registration</title>
     <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-image: url('Background.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+    body {
+        font-family: sans-serif;
+        text-align: center;
+        padding: 50px;
+        background-color: #E6E6FA;
+        color: #333;
+        background-image: url('Background.png'); /* Replace with your image path */
+        background-size: Cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+		/* Optional: */
+        /* background-attachment: fixed; */
+    }
+        h1 {
+            color: #4A235A;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
         }
         form {
-            /* Your existing form styles */
+            display: inline-block;
+            text-align: left;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button[type="submit"], #updateClassButton {
+            background-color: #FF5733;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        button[type="submit"]:hover, #updateClassButton:hover {
+            background-color: #E64A19;
         }
         #error-message {
             color: red;
@@ -27,9 +65,9 @@
             margin-right: auto;
             max-height: 200px;
             overflow-y: auto;
-            border: 1px solid rgba(221, 221, 221, 0.5); /* Semi-transparent border */
+            border: 1px solid rgba(221, 221, 221, 0.5);
             padding: 10px;
-            background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white background */
+            background-color: rgba(255, 255, 255, 0.5);
         }
         #member-list ul {
             list-style-type: none;
@@ -39,50 +77,75 @@
         #member-list li {
             padding: 8px;
             margin-bottom: 5px;
-            border-bottom: 1px solid rgba(238, 238, 238, 0.5); /* Semi-transparent divider */
+            border-bottom: 1px solid rgba(238, 238, 238, 0.5);
             text-align: center;
         }
         #member-list li:last-child {
-          border-bottom: none;
+            border-bottom: none;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .form-container {
+            flex: 1;
+            max-width: 400px;
+        }
+        .list-container {
+            flex: 1;
+            max-width: 300px;
+        }
+        .list-title {
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h1>Incognito Perma Party</h1>
-    <p>This is for Perma Party</p>
+    <h1 style="color: white; text-shadow: 2px 2px 4px black;"><strong>Incognito Guild</strong></h1>
 
-    <form id="registrationForm">
-        <input type="text" name="IngameName" placeholder="Ingame Name" required><br>
-        <select name="Class" required>
-            <option value="" disabled selected>Select Class</option>
-            <option value="ArchBishop">ArchBishop</option>
-            <option value="Shura">Shura</option>
-            <option value="Ranger">Ranger</option>
-            <option value="Wanderer">Wanderer</option>
-            <option value="Royal Guard">Royal Guard</option>
-            <option value="Rune Knight">Rune Knight</option>
-            <option value="Shadow Chaser">Shadow Chaser</option>
-            <option value="Guillotine Cross">Guillotine Cross</option>
-            <option value="Sorcerer">Sorcerer</option>
-            <option value="Warlock">Warlock</option>
-            <option value="Mechanic">Mechanic</option>
-            <option value="Genetic">Genetic</option>
-            <option value="Minstrel">Minstrel</option>
-        </select><br>
-        <button type="submit">Register</button>
-        <div id="error-message"></div>
-    </form>
+    <div class="container">
+        <div class="form-container">
+            <form id="registrationForm">
+                <input type="text" name="IngameName" placeholder="Ingame Name" required><br>
+                <select name="Class" required>
+                    <option value="" disabled selected>Select Class</option>
+                    <option value="ArchBishop">ArchBishop</option>
+                    <option value="Shura">Shura</option>
+                    <option value="Ranger">Ranger</option>
+                    <option value="Wanderer">Wanderer</option>
+                    <option value="Royal Guard">Royal Guard</option>
+                    <option value="Rune Knight">Rune Knight</option>
+                    <option value="Shadow Chaser">Shadow Chaser</option>
+                    <option value="Guillotine Cross">Guillotine Cross</option>
+                    <option value="Sorcerer">Sorcerer</option>
+                    <option value="Warlock">Warlock</option>
+                    <option value="Mechanic">Mechanic</option>
+                    <option value="Genetic">Genetic</option>
+                    <option value="Minstrel">Minstrel</option>
+                </select><br>
+                <button type="submit">Register</button>
+                <button type="button" id="updateClassButton">Update Class</button>
+                <div id="error-message"></div>
+            </form>
+        </div>
 
-    <div id="member-list">
-        <h2>Registered Members</h2>
-        <ul id="members">
-            </ul>
+        <div class="list-container">
+            <div class="list-title">Registered Members</div>
+            <div id="member-list">
+                <ul id="members">
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbz0tnDu24jJoqhpmPY9sNIyP_jOfT49sfpSicou5hsyU73tRxTx7nNyrfkiUe6IZTOY/exec';
         const form = document.forms['registrationForm'];
         const submitButton = form.querySelector('button[type="submit"]');
+        const updateClassButton = document.getElementById('updateClassButton');
         const cooldownKey = 'lastRegistrationAttempt';
         const cooldownTime = 10 * 1000;
         const errorMessageDiv = document.getElementById('error-message');
@@ -123,7 +186,6 @@
                 return;
             }
 
-            // ... (form submission code remains the same) ...
             fetch(scriptURL, { method: 'POST', body: new FormData(form) })
                 .then(response => response.json())
                 .then(data => {
@@ -148,6 +210,38 @@
                 .catch(error => {
                     // ... (error handling remains the same) ...
                 });
+        });
+
+        updateClassButton.addEventListener('click', () => {
+            const ingameName = document.querySelector('input[name="IngameName"]').value;
+            const newClass = document.querySelector('select[name="Class"]').value;
+
+            if (ingameName && newClass) {
+                fetch(scriptURL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'updateClass',
+                        IngameName: ingameName,
+                        Class: newClass
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert('Class updated successfully!');
+                        fetchMemberList();
+                    } else {
+                        alert('Failed to update class. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error updating class:', error);
+                    alert('An error occurred. Please try again later.');
+                });
+            } else {
+                alert('Please enter both Ingame Name and select a Class.');
+            }
         });
     </script>
 </body>
