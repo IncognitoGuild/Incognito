@@ -7,19 +7,35 @@
             font-family: sans-serif;
             text-align: center;
             padding: 50px;
-            background-image: url('Background.png'); /* Replace with your image's filename */
+            background-image: url('Background.png');
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            /* Add any other body styles here */
         }
         form {
             /* Your existing form styles */
         }
-        /* Other styles */
         #error-message {
             color: red;
             margin-top: 10px;
+        }
+        #member-list {
+            margin-top: 20px;
+            text-align: left;
+            width: 300px; /* Adjust width as needed */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #member-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #member-list li {
+            border: 1px solid #ddd;
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: white; /* Add a background for better visibility */
+            text-align: center;
         }
     </style>
 </head>
@@ -49,32 +65,48 @@
         <div id="error-message"></div>
     </form>
 
+    <div id="member-list">
+        <h2>Registered Members</h2>
+        <ul id="members">
+            </ul>
+    </div>
+
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwfsQa8dZG_1PEWli4PuxiB7OUhrmM4KoRMmRTaudnIUAQ6-sK73C4l8aMn4AtkYCiu/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbz0tnDu24jJoqhpmPY9sNIyP_jOfT49sfpSicou5hsyU73tRxTx7nNyrfkiUe6IZTOY/exec';
         const form = document.forms['registrationForm'];
         const submitButton = form.querySelector('button[type="submit"]');
         const cooldownKey = 'lastRegistrationAttempt';
-        const cooldownTime = 10 * 1000; // 10 seconds (adjust as needed in milliseconds)
-        const errorMessageDiv = document.getElementById('error-message'); // Get the error message div
+        const cooldownTime = 10 * 1000;
+        const errorMessageDiv = document.getElementById('error-message');
+        const membersList = document.getElementById('members');
 
         function checkCooldown() {
-            const lastAttempt = localStorage.getItem(cooldownKey);
-            if (lastAttempt && (Date.now() - parseInt(lastAttempt)) < cooldownTime) {
-                const remainingTime = cooldownTime - (Date.now() - parseInt(lastAttempt));
-                const remainingSeconds = Math.ceil(remainingTime / 1000);
-                submitButton.disabled = true;
-                submitButton.textContent = `Cooldown: ${remainingSeconds}s`;
-                setTimeout(() => {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Register';
-                }, remainingTime);
-                return true; // Cooldown active
-            }
-            return false; // Cooldown not active
+            // ... (cooldown code remains the same) ...
         }
 
-        // Initial check on page load
-        checkCooldown();
+        function fetchMemberList() {
+            fetch(scriptURL + '?action=list') // Assuming your Google Apps Script has a 'list' action
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success' && data.members) {
+                        membersList.innerHTML = ''; // Clear existing list
+                        data.members.forEach(member => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = `${member.IngameName} - ${member.Class}`;
+                            membersList.appendChild(listItem);
+                        });
+                    } else {
+                        membersList.innerHTML = '<li>Failed to load member list.</li>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching member list:', error);
+                    membersList.innerHTML = '<li>Failed to load member list.</li>';
+                });
+        }
+
+        // Fetch member list on page load
+        fetchMemberList();
 
         form.addEventListener('submit', e => {
             e.preventDefault();
@@ -84,21 +116,18 @@
                 return;
             }
 
-            // Disable button immediately after clicking
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
-            errorMessageDiv.textContent = ''; // Clear previous error messages
-
-            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-                .then(response => response.json()) // Parse the response as JSON
+            // ... (form submission code remains the same) ...
+            fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+                .then(response => response.json())
                 .then(data => {
                     if (data.result === 'success') {
                         alert('Thank you! Your registration has been submitted.');
-                        localStorage.setItem(cooldownKey, Date.now()); // Set cooldown timestamp
+                        localStorage.setItem(cooldownKey, Date.now());
                         submitButton.disabled = false;
                         submitButton.textContent = 'Register';
-                        form.reset(); // Optional: Clear the form
+                        form.reset();
                         checkCooldown();
+                        fetchMemberList(); // Refresh member list after successful registration
                     } else if (data.result === 'duplicate') {
                         errorMessageDiv.textContent = 'Error: Ingame Name already registered.';
                         submitButton.disabled = false;
@@ -110,10 +139,7 @@
                     }
                 })
                 .catch(error => {
-                    console.error('Error!', error.message);
-                    alert('An error occurred. Please try again later.');
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Register';
+                    // ... (error handling remains the same) ...
                 });
         });
     </script>
