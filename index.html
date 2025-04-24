@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Incognito Guild - Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: sans-serif;
+            font-family: 'Inter', sans-serif;
             text-align: center;
             padding: 50px;
             background-color: #E6E6FA;
@@ -15,7 +18,8 @@
             background-attachment: fixed;
         }
         h1 {
-            color: #4A235A;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
         }
         p {
@@ -29,6 +33,7 @@
             border-radius: 8px;
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px; /* Increased form width for better layout */
         }
         input[type="text"], select {
             width: calc(100% - 22px);
@@ -37,8 +42,9 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
         }
-        button[type="submit"], #updateClassButton {
+        button[type="submit"] {
             background-color: #FF5733;
             color: white;
             padding: 10px 15px;
@@ -47,13 +53,16 @@
             cursor: pointer;
             width: 100%;
             margin-top: 10px;
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease;
         }
-        button[type="submit"]:hover, #updateClassButton:hover {
+        button[type="submit"]:hover {
             background-color: #E64A19;
         }
         #error-message {
             color: red;
             margin-top: 10px;
+            font-family: 'Inter', sans-serif;
         }
         #member-list {
             margin-top: 20px;
@@ -66,6 +75,8 @@
             border: 1px solid rgba(221, 221, 221, 0.5);
             padding: 10px;
             background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
         }
         #member-list ul {
             list-style-type: none;
@@ -85,28 +96,48 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            flex-wrap: wrap; /* Added for better responsiveness */
+            gap: 20px;
         }
         .form-container {
             flex: 1;
             max-width: 400px;
+            margin: auto; /* Center form in the container */
         }
         .list-container {
             flex: 1;
             max-width: 300px;
+            margin: auto;
         }
         .list-title {
             text-align: center;
             margin-bottom: 10px;
             font-weight: bold;
+            font-family: 'Inter', sans-serif;
+            color: #333;
+        }
+        @media (max-width: 600px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .form-container, .list-container {
+                width: 100%;
+                max-width: 100%;
+            }
+            form {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <h1 style="color: white; text-shadow: 2px 2px 4px black;"><strong>Incognito Guild</strong></h1>
+    <h1><strong>Incognito Guild</strong></h1>
+    <p>Registration Page</p>
 
     <div class="container">
         <div class="form-container">
-            <form id="registrationForm">
+            <form id="registrationForm" onsubmit="return validateForm()">
                 <input type="text" name="IngameName" placeholder="Ingame Name" required><br>
                 <select name="Class" required>
                     <option value="" disabled selected>Select Class</option>
@@ -136,13 +167,12 @@
                     <option value="EAGLE">EAGLE</option>
                 </select><br>
                 <button type="submit">Register</button>
-                <button type="button" id="updateClassButton">Update Class</button>
                 <div id="error-message"></div>
             </form>
         </div>
 
         <div class="list-container">
-            <div class="list-title">Registered Members</div>
+            <h2 class="list-title">Registered Members</h2>
             <div id="member-list">
                 <ul id="members">
                 </ul>
@@ -151,14 +181,33 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbx7f0KGqUccWaENtVS68aRvE8M8NqweVKSGD4V8SPSdKoWCj6JyiTEZ4-I7uCOFQjX2/exec'; // Replace with your script URL
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwQa_q7BO47mY4j4iu6NifxBdLZdcfOTSW5CWVuba9JMa6LXpfcMvTUIweDXTh4uhyh/exec'; // Replace this with your script URL
         const form = document.forms['registrationForm'];
         const submitButton = form.querySelector('button[type="submit"]');
-        const updateClassButton = document.getElementById('updateClassButton');
         const cooldownKey = 'lastRegistrationAttempt';
         const cooldownTime = 10 * 1000;
         const errorMessageDiv = document.getElementById('error-message');
         const membersList = document.getElementById('members');
+
+        function validateForm() {
+            const ingameName = document.forms["registrationForm"]["IngameName"].value;
+            const className = document.forms["registrationForm"]["Class"].value;
+            const party = document.forms["registrationForm"]["Party"].value;
+
+            if (ingameName == "") {
+              alert("Ingame Name must be filled out");
+              return false;
+            }
+            if (className == "") {
+                alert("Class must be selected");
+                return false;
+            }
+             if (party == "") {
+                alert("Party must be selected");
+                return false;
+            }
+            return true;
+        }
 
         function checkCooldown() {
             const lastAttempt = localStorage.getItem(cooldownKey);
@@ -254,7 +303,7 @@
                     } else if (data && data.result === 'duplicate') {
                         displayError('Error: Ingame Name already registered.');
                     } else {
-                        displayError('An error occurred. Please try again later.');
+                        displayError('An error occurred. Please try again later.  Error from server: ' + data.error); // Include server error
                         if (data && data.error) {
                             console.error('Registration error from Google Apps Script:', data.error);
                         }
@@ -269,51 +318,6 @@
                     submitButton.textContent = 'Register';
                     checkCooldown();
                 });
-        });
-
-        updateClassButton.addEventListener('click', () => {
-            const ingameName = document.querySelector('input[name="IngameName"]').value;
-            const newClass = document.querySelector('select[name="Class"]').value;
-
-            if (ingameName && newClass) {
-                if (confirm("Are you sure you want to update the class?")) {
-                    fetch(scriptURL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            action: 'updateClass',
-                            IngameName: ingameName,
-                            Class: newClass,
-                        }),
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error(`HTTP error! status: ${response.status}`);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data && data.result === 'success') {
-                                alert('Class updated successfully!');
-                                fetchMemberList();
-                                form.reset();
-                            } else {
-                                alert('Failed to update class. Please try again.');
-                                if (data && data.error) {
-                                    console.error('Update class error from Google Apps Script:', data.error);
-                                }
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error updating class:', error);
-                            alert('An error occurred. Please try again later.');
-                        });
-                }
-            } else {
-                alert('Please enter both Ingame Name and select a Class.');
-            }
         });
     </script>
 </body>
