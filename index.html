@@ -9,7 +9,7 @@
             padding: 50px;
             background-color: #E6E6FA;
             color: #333;
-            background-image: url('Background2'); /* Replace with your image path */
+            background-image: url('Background.png'); /* Replace with your image path */
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
@@ -151,7 +151,7 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxVAeMTmG_Yj2EuLQlmK49B9p3cjQPlKn6tHRIAI9CK2MdDpTDV1FgrdmC00uoZRZyN/exec'; // Replace with your script URL
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby6FsYAiyQGvOAD7H0wVu3r0DWrjdOvFawPU_yDuTLcSzrLQ6ZzLe-bm9koEdFD8JXM/exec'; // Replace with your script URL
         const form = document.forms['registrationForm'];
         const submitButton = form.querySelector('button[type="submit"]');
         const updateClassButton = document.getElementById('updateClassButton');
@@ -182,17 +182,29 @@
         function fetchMemberList() {
             membersList.innerHTML = '<li>Loading...</li>';
             fetch(scriptURL + '?action=list')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if (data.result === 'success' && data.members) {
+                    if (data && data.result === 'success' && data.members) {
                         membersList.innerHTML = '';
-                        data.members.forEach(member => {
-                            const listItem = document.createElement('li');
-                            listItem.textContent = `${member.IngameName} - ${member.Class} (${member.Party})`;
-                            membersList.appendChild(listItem);
-                        });
+                        if (data.members.length > 0) {
+                            data.members.forEach(member => {
+                                const listItem = document.createElement('li');
+                                listItem.textContent = `${member.IngameName} - ${member.Class} (${member.Party})`;
+                                membersList.appendChild(listItem);
+                            });
+                        } else {
+                            membersList.innerHTML = '<li>No members registered yet.</li>';
+                        }
                     } else {
                         membersList.innerHTML = '<li>Failed to load member list.</li>';
+                        if (data && data.error) {
+                            console.error('Error from Google Apps Script:', data.error);
+                        }
                     }
                 })
                 .catch(error => {
@@ -227,17 +239,25 @@
                 },
                 body: JSON.stringify(data),
             })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    if (data.result === 'success') {
+                    if (data && data.result === 'success') {
                         alert('Thank you! Your registration has been submitted.');
                         localStorage.setItem(cooldownKey, Date.now());
                         form.reset();
                         fetchMemberList();
-                    } else if (data.result === 'duplicate') {
+                    } else if (data && data.result === 'duplicate') {
                         displayError('Error: Ingame Name already registered.');
                     } else {
                         displayError('An error occurred. Please try again later.');
+                        if (data && data.error) {
+                            console.error('Registration error from Google Apps Script:', data.error);
+                        }
                     }
                 })
                 .catch(error => {
@@ -268,14 +288,22 @@
                             Class: newClass,
                         }),
                     })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json();
+                        })
                         .then(data => {
-                            if (data.result === 'success') {
+                            if (data && data.result === 'success') {
                                 alert('Class updated successfully!');
                                 fetchMemberList();
                                 form.reset();
                             } else {
                                 alert('Failed to update class. Please try again.');
+                                if (data && data.error) {
+                                    console.error('Update class error from Google Apps Script:', data.error);
+                                }
                             }
                         })
                         .catch(error => {
