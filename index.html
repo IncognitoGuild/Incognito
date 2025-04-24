@@ -10,7 +10,7 @@
             background-color: #E6E6FA;
             color: #333;
             background-image: url('Background.png'); /* Replace with your image path */
-            background-size: Cover;
+            background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
         }
@@ -124,6 +124,17 @@
                     <option value="Genetic">Genetic</option>
                     <option value="Minstrel">Minstrel</option>
                 </select><br>
+                <select name="Party" required>
+                    <option value="" disabled selected>Select Party</option>
+                    <option value="BOSS">BOSS</option>
+                    <option value="RAT">RAT</option>
+                    <option value="SNAKE">SNAKE</option>
+                    <option value="PANDA">PANDA</option>
+                    <option value="TIGER">TIGER</option>
+                    <option value="LION">LION</option>
+                    <option value="PUMA">PUMA</option>
+                    <option value="EAGLE">EAGLE</option>
+                </select><br>
                 <button type="submit">Register</button>
                 <button type="button" id="updateClassButton">Update Class</button>
                 <div id="error-message"></div>
@@ -140,7 +151,7 @@
     </div>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwe_wUR9fLKSE7MtEyT-TtWKVl0e2mgyuN282TH91Q_E5J0F2xlKT2pWwogWNhqiZiL/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzvKkL366-j4lzJ-zBqiKzKkM3Y-7tFkLzQThjT8K9v4L9HZY/exec'; // Replace with your script URL
         const form = document.forms['registrationForm'];
         const submitButton = form.querySelector('button[type="submit"]');
         const updateClassButton = document.getElementById('updateClassButton');
@@ -177,7 +188,7 @@
                         membersList.innerHTML = '';
                         data.members.forEach(member => {
                             const listItem = document.createElement('li');
-                            listItem.textContent = `${member.IngameName} - ${member.Class}`;
+                            listItem.textContent = `${member.IngameName} - ${member.Class} (${member.Party})`;
                             membersList.appendChild(listItem);
                         });
                     } else {
@@ -203,7 +214,19 @@
             submitButton.disabled = true;
             submitButton.textContent = 'Submitting...';
 
-            fetch(scriptURL, { method: 'POST', body: new FormData(form) })
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            fetch(scriptURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.result === 'success') {
@@ -236,27 +259,29 @@
                 if (confirm("Are you sure you want to update the class?")) {
                     fetch(scriptURL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
                         body: JSON.stringify({
                             action: 'updateClass',
                             IngameName: ingameName,
-                            Class: newClass
+                            Class: newClass,
+                        }),
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.result === 'success') {
+                                alert('Class updated successfully!');
+                                fetchMemberList();
+                                form.reset();
+                            } else {
+                                alert('Failed to update class. Please try again.');
+                            }
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.result === 'success') {
-                            alert('Class updated successfully!');
-                            fetchMemberList();
-                            form.reset();
-                        } else {
-                            alert('Failed to update class. Please try again.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error updating class:', error);
-                        alert('An error occurred. Please try again later.');
-                    });
+                        .catch(error => {
+                            console.error('Error updating class:', error);
+                            alert('An error occurred. Please try again later.');
+                        });
                 }
             } else {
                 alert('Please enter both Ingame Name and select a Class.');
