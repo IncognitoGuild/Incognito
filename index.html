@@ -46,11 +46,6 @@
                     </select>
                     <div id="class-error" class="text-red-500 text-xs italic" style="display: none;"></div>
                 </div>
-                <div class="mb-4">
-                    <label for="party" class="block text-gray-700 text-sm font-bold mb-2">Party:</label>
-                    <input type="number" id="party" name="party" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" min="1" max="5">
-                    <div id="party-error" class="text-red-500 text-xs italic" style="display: none;"></div>
-                </div>
                 <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full">Submit Attendance</button>
             </form>
         </div>
@@ -62,8 +57,16 @@
 
         <div id="attendance-data" class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-xl font-semibold mb-4 text-gray-800 text-center"> আজকের অ্যাটেন্ডেন্স শীট</h2>
-            <ul id="attendance-list" class="divide-y divide-gray-200">
-                </ul>
+            <div id="puma-party" class="mb-4">
+                <h3 class="text-lg font-semibold text-blue-700">PUMA Party</h3>
+                <ul id="puma-list" class="divide-y divide-gray-200">
+                    </ul>
+            </div>
+            <div id="tiger-party">
+                <h3 class="text-lg font-semibold text-red-700">TIGER Party</h3>
+                <ul id="tiger-list" class="divide-y divide-gray-200">
+                    </ul>
+            </div>
             <p id="no-attendance" class="text-gray-500 text-center">No attendance recorded yet.</p>
         </div>
     </main>
@@ -75,14 +78,13 @@
     <script>
         const attendanceForm = document.getElementById('attendance-form');
         const thankYouMessage = document.getElementById('thank-you');
-        const attendanceList = document.getElementById('attendance-list');
+        const pumaList = document.getElementById('puma-list');
+        const tigerList = document.getElementById('tiger-list');
         const noAttendanceMessage = document.getElementById('no-attendance');
         const nameInput = document.getElementById('name');
         const classInput = document.getElementById('class');
-        const partyInput = document.getElementById('party');
         const nameError = document.getElementById('name-error');
         const classError = document.getElementById('class-error');
-        const partyError = document.getElementById('party-error');
 
         let attendanceRecords = [];
 
@@ -106,41 +108,28 @@
             return true;
         }
 
-        function validateParty() {
-            if (partyInput.value && (parseInt(partyInput.value) < 1 || parseInt(partyInput.value) > 5)) {
-                partyError.textContent = "Party must be between 1 and 5";
-                partyError.style.display = "block";
-                return false;
-            }
-            partyError.style.display = "none";
-            return true;
-        }
-
         nameInput.addEventListener('input', validateName);
         classInput.addEventListener('change', validateClass);
-        partyInput.addEventListener('input', validateParty);
 
         attendanceForm.addEventListener('submit', (event) => {
             event.preventDefault();
 
-            if (!validateName() || !validateClass() || !validateParty()) {
+            if (!validateName() || !validateClass()) {
                 return;
             }
 
             const name = nameInput.value.trim();
             const className = classInput.value;
-            const party = partyInput.value ? parseInt(partyInput.value) : null;
 
             const record = {
                 name: name,
                 class: className,
-                party: party,
                 timestamp: new Date().toLocaleString()
             };
 
             attendanceRecords.push(record);
             updateAttendanceList();
-            saveAttendanceToGitHub(attendanceRecords); // Save to GitHub
+            saveAttendanceToGitHub(attendanceRecords);
 
             attendanceForm.style.display = 'none';
             thankYouMessage.style.display = 'block';
@@ -150,23 +139,45 @@
                 attendanceForm.style.display = 'block';
                 nameInput.value = '';
                 classInput.value = '';
-                partyInput.value = '';
             }, 2000);
         });
 
         function updateAttendanceList() {
             if (attendanceRecords.length === 0) {
                 noAttendanceMessage.style.display = 'block';
-                attendanceList.innerHTML = ''; // Clear the list
+                pumaList.innerHTML = '';
+                tigerList.innerHTML = '';
             } else {
                 noAttendanceMessage.style.display = 'none';
-                attendanceList.innerHTML = attendanceRecords.map(record => `
+                const pumaMembers = [];
+                const tigerMembers = [];
+
+                // Simple assignment logic: First 5 to PUMA, next 5 to TIGER, then alternate.
+                attendanceRecords.forEach((record, index) => {
+                    if (index < 5) {
+                        pumaMembers.push(record);
+                    } else if (index < 10) {
+                        tigerMembers.push(record);
+                    } else if (index % 2 === 0) {
+                        pumaMembers.push(record);
+                    } else {
+                        tigerMembers.push(record);
+                    }
+                });
+
+                pumaList.innerHTML = pumaMembers.map(record => `
                     <li class="py-2">
                         <div class="flex justify-between items-center">
-                            <div>
-                                <span class="font-semibold">${record.name}</span> (${record.class})
-                                ${record.party ? `<span class="text-gray-500 ml-2">Party: ${record.party}</span>` : ''}
-                            </div>
+                            <span class="font-semibold">${record.name}</span> (${record.class})
+                            <span class="text-gray-400 text-sm">${record.timestamp}</span>
+                        </div>
+                    </li>
+                `).join('');
+
+                tigerList.innerHTML = tigerMembers.map(record => `
+                    <li class="py-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">${record.name}</span> (${record.class})
                             <span class="text-gray-400 text-sm">${record.timestamp}</span>
                         </div>
                     </li>
@@ -176,8 +187,8 @@
 
         // Load attendance data from GitHub
         function loadAttendanceFromGitHub() {
-            const githubRepo = 'your-username/your-repo-name'; // Replace with your repo
-            const filePath = 'attendance.json'; // Path to your JSON file
+            const githubRepo = 'your-username/your-repo-name';
+            const filePath = 'attendance.json';
             const rawUrl = `https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`;
 
             fetch(rawUrl)
@@ -193,30 +204,27 @@
                         updateAttendanceList();
                     } else {
                         console.error('Data from GitHub is not an array:', data);
-                        attendanceRecords = [];
+                         attendanceRecords = [];
                         updateAttendanceList();
                     }
                 })
                 .catch(error => {
                     console.error('Error loading attendance data:', error);
-                    // Initialize attendanceRecords as empty array to prevent errors
-                    attendanceRecords = [];
+                     attendanceRecords = [];
                     updateAttendanceList();
                 });
         }
 
         // Save attendance data to GitHub
         function saveAttendanceToGitHub(data) {
-            const githubRepo = 'your-username/your-repo-name'; // Replace with your repo
-            const filePath = 'attendance.json'; // Path to your JSON file
-            const accessToken = 'your-github-access-token'; // Replace with your token
-            // NEVER hardcode your access token in production code.  This is for demonstration only.
+            const githubRepo = 'your-username/your-repo-name';
+            const filePath = 'attendance.json';
+            const accessToken = 'your-github-access-token';
             const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
 
             const jsonData = JSON.stringify(data, null, 2);
-            const content = btoa(jsonData); // Encode to base64
+            const content = btoa(jsonData);
 
-            // Check if the file exists to get its sha for updating
             fetch(`https://api.github.com/repos/${githubRepo}/contents/${filePath}`, {
                 headers: {
                     'Authorization': `token ${accessToken}`
@@ -224,8 +232,7 @@
             })
             .then(response => response.json())
             .then(fileData => {
-                const sha = fileData.sha; // Get the sha
-                // Send the update request
+                const sha = fileData.sha;
                 fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -235,7 +242,7 @@
                     body: JSON.stringify({
                         message: 'Update attendance data',
                         content: content,
-                        sha: sha // Include the sha in the update request
+                        sha: sha
                     })
                 })
                 .then(response => {
@@ -248,7 +255,6 @@
             })
             .catch(error => {
                 console.error("Error getting file SHA:", error);
-                 // If the file doesn't exist, create it
                 fetch(url, {
                     method: 'PUT',
                     headers: {
@@ -270,7 +276,7 @@
             });
         }
 
-        loadAttendanceFromGitHub(); // Load data when the page loads
+        loadAttendanceFromGitHub();
 
     </script>
 </body>
