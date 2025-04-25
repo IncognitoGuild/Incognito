@@ -86,7 +86,10 @@
         const nameError = document.getElementById('name-error');
         const classError = document.getElementById('class-error');
 
-        let attendanceRecords = [];
+        let attendanceRecords = {
+            puma: [],
+            tiger: []
+        };
 
         function validateName() {
             if (!nameInput.value.trim()) {
@@ -121,13 +124,26 @@
             const name = nameInput.value.trim();
             const className = classInput.value;
 
+            // Determine party assignment (PUMA or TIGER)
+            let assignedParty = '';
+            if (attendanceRecords.puma.length < 5) {
+                assignedParty = 'puma';
+            } else if (attendanceRecords.tiger.length < 5) {
+                assignedParty = 'tiger';
+            }
+             else if (attendanceRecords.puma.length <= attendanceRecords.tiger.length) {
+                assignedParty = 'puma';
+            } else {
+                assignedParty = 'tiger';
+            }
+
             const record = {
                 name: name,
                 class: className,
                 timestamp: new Date().toLocaleString()
             };
 
-            attendanceRecords.push(record);
+            attendanceRecords[assignedParty].push(record); // Add to the correct party
             updateAttendanceList();
             saveAttendanceToGitHub(attendanceRecords);
 
@@ -143,29 +159,14 @@
         });
 
         function updateAttendanceList() {
-            if (attendanceRecords.length === 0) {
+            if (attendanceRecords.puma.length === 0 && attendanceRecords.tiger.length === 0) {
                 noAttendanceMessage.style.display = 'block';
                 pumaList.innerHTML = '';
                 tigerList.innerHTML = '';
             } else {
                 noAttendanceMessage.style.display = 'none';
-                const pumaMembers = [];
-                const tigerMembers = [];
 
-                // Simple assignment logic: First 5 to PUMA, next 5 to TIGER, then alternate.
-                attendanceRecords.forEach((record, index) => {
-                    if (index < 5) {
-                        pumaMembers.push(record);
-                    } else if (index < 10) {
-                        tigerMembers.push(record);
-                    } else if (index % 2 === 0) {
-                        pumaMembers.push(record);
-                    } else {
-                        tigerMembers.push(record);
-                    }
-                });
-
-                pumaList.innerHTML = pumaMembers.map(record => `
+                pumaList.innerHTML = attendanceRecords.puma.map(record => `
                     <li class="py-2">
                         <div class="flex justify-between items-center">
                             <span class="font-semibold">${record.name}</span> (${record.class})
@@ -174,7 +175,7 @@
                     </li>
                 `).join('');
 
-                tigerList.innerHTML = tigerMembers.map(record => `
+                tigerList.innerHTML = attendanceRecords.tiger.map(record => `
                     <li class="py-2">
                         <div class="flex justify-between items-center">
                             <span class="font-semibold">${record.name}</span> (${record.class})
@@ -199,21 +200,26 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (Array.isArray(data)) {
-                        attendanceRecords = data;
-                        updateAttendanceList();
+                    if (typeof data === 'object' && data !== null) {
+                        attendanceRecords = {
+                            puma: Array.isArray(data.puma) ? data.puma : [],
+                            tiger: Array.isArray(data.tiger) ? data.tiger : []
+                        };
+                       updateAttendanceList();
                     } else {
-                        console.error('Data from GitHub is not an array:', data);
-                         attendanceRecords = [];
+                        console.error('Data from GitHub is not a valid object:', data);
+                        attendanceRecords = { puma: [], tiger: [] };
                         updateAttendanceList();
                     }
                 })
                 .catch(error => {
                     console.error('Error loading attendance data:', error);
-                     attendanceRecords = [];
+                    attendanceRecords = { puma: [], tiger: [] };
                     updateAttendanceList();
                 });
         }
+
+
 
         // Save attendance data to GitHub
         function saveAttendanceToGitHub(data) {
