@@ -3,322 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incognito Guild - Registration</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>Guild Attendance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            text-align: center;
-            padding: 50px;
-            background-color: #E6E6FA;
-            color: #333;
-            background-image: url('Background2'); /* Replace with your image path */
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-        }
-        h1 {
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-        }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-        form {
-            display: inline-block;
-            text-align: left;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px; /* Increased form width for better layout */
-        }
-        input[type="text"], select {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        button[type="submit"] {
-            background-color: #FF5733;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.3s ease;
-        }
-        button[type="submit"]:hover {
-            background-color: #E64A19;
-        }
-        #error-message {
-            color: red;
-            margin-top: 10px;
-            font-family: 'Inter', sans-serif;
-        }
-        #member-list {
-            margin-top: 20px;
-            text-align: left;
-            width: 300px;
-            margin-left: auto;
-            margin-right: auto;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid rgba(221, 221, 221, 0.5);
-            padding: 10px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 8px;
-            font-family: 'Inter', sans-serif;
-        }
-        #member-list ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        #member-list li {
-            padding: 8px;
-            margin-bottom: 5px;
-            border-bottom: 1px solid rgba(238, 238, 238, 0.5);
-            text-align: center;
-        }
-        #member-list li:last-child {
-            border-bottom: none;
-        }
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            flex-wrap: wrap; /* Added for better responsiveness */
-            gap: 20px;
-        }
-        .form-container {
-            flex: 1;
-            max-width: 400px;
-            margin: auto; /* Center form in the container */
-        }
-        .list-container {
-            flex: 1;
-            max-width: 300px;
-            margin: auto;
-        }
-        .list-title {
-            text-align: center;
-            margin-bottom: 10px;
-            font-weight: bold;
-            font-family: 'Inter', sans-serif;
-            color: #333;
-        }
-        @media (max-width: 600px) {
-            .container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .form-container, .list-container {
-                width: 100%;
-                max-width: 100%;
-            }
-            form {
-                width: 100%;
-            }
         }
     </style>
 </head>
-<body>
-    <h1><strong>Incognito Guild</strong></h1>
-    <p>Registration Page</p>
+<body class="bg-gray-100">
+    <header class="bg-purple-600 text-white py-4 text-center rounded-md shadow-md">
+        <h1 class="text-2xl font-semibold">Guild Attendance</h1>
+        <p class="text-md">Record your attendance for guild events.</p>
+    </header>
 
-    <div class="container">
-        <div class="form-container">
-            <form id="registrationForm" onsubmit="return validateForm()">
-                <input type="text" name="IngameName" placeholder="Ingame Name" required><br>
-                <select name="Class" required>
-                    <option value="" disabled selected>Select Class</option>
-                    <option value="ArchBishop">ArchBishop</option>
-                    <option value="Shura">Shura</option>
-                    <option value="Ranger">Ranger</option>
-                    <option value="Wanderer">Wanderer</option>
-                    <option value="Royal Guard">Royal Guard</option>
-                    <option value="Rune Knight">Rune Knight</option>
-                    <option value="Shadow Chaser">Shadow Chaser</option>
-                    <option value="Guillotine Cross">Guillotine Cross</option>
-                    <option value="Sorcerer">Sorcerer</option>
-                    <option value="Warlock">Warlock</option>
-                    <option value="Mechanic">Mechanic</option>
-                    <option value="Genetic">Genetic</option>
-                    <option value="Minstrel">Minstrel</option>
-                </select><br>
-                <select name="Party" required>
-                    <option value="" disabled selected>Select Party</option>
-                    <option value="BOSS">BOSS</option>
-                    <option value="RAT">RAT</option>
-                    <option value="SNAKE">SNAKE</option>
-                    <option value="PANDA">PANDA</option>
-                    <option value="TIGER">TIGER</option>
-                    <option value="LION">LION</option>
-                    <option value="PUMA">PUMA</option>
-                    <option value="EAGLE">EAGLE</option>
-                </select><br>
-                <button type="submit">Register</button>
-                <div id="error-message"></div>
+    <main class="container mx-auto mt-8 p-4 rounded-md">
+        <div id="attendance-form" class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 text-center">Attendance Form</h2>
+            <form>
+                <div class="mb-4">
+                    <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Ingame Name:</label>
+                    <input type="text" id="name" name="name" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                    <div id="name-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <div class="mb-4">
+                    <label for="class" class="block text-gray-700 text-sm font-bold mb-2">Class:</label>
+                    <select id="class" name="class" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                        <option value="">Select Class</option>
+                        <option value="Death Knight">Death Knight</option>
+                        <option value="Druid">Druid</option>
+                        <option value="Hunter">Hunter</option>
+                        <option value="Mage">Mage</option>
+                        <option value="Paladin">Paladin</option>
+                        <option value="Priest">Priest</option>
+                        <option value="Rogue">Rogue</option>
+                        <option value="Shaman">Shaman</option>
+                        <option value="Warlock">Warlock</option>
+                        <option value="Warrior">Warrior</option>
+                    </select>
+                    <div id="class-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <div class="mb-4">
+                    <label for="party" class="block text-gray-700 text-sm font-bold mb-2">Party:</label>
+                    <input type="number" id="party" name="party" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" min="1" max="5">
+                    <div id="party-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
+                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full">Submit Attendance</button>
             </form>
         </div>
 
-        <div class="list-container">
-            <h2 class="list-title">Registered Members</h2>
-            <div id="member-list">
-                <ul id="members">
-                </ul>
-            </div>
+        <div id="thank-you" class="bg-white rounded-lg shadow-md p-6 mb-6 text-center" style="display: none;">
+            <h2 class="text-xl font-semibold text-green-600">Thank you!</h2>
+            <p class="text-gray-700">Your attendance has been recorded.</p>
         </div>
-    </div>
+
+        <div id="attendance-data" class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 text-center"> আজকের অ্যাটেন্ডেন্স শীট</h2>
+            <ul id="attendance-list" class="divide-y divide-gray-200">
+                </ul>
+            <p id="no-attendance" class="text-gray-500 text-center">No attendance recorded yet.</p>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-4 text-center rounded-md mt-8">
+        <p>© 2024 Guild Attendance. All rights reserved.</p>
+    </footer>
 
     <script>
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzFKdbC-XKo4BiOwiEY4umnflQcnSUQKsvBDx6W5D75aO_iV6rpl5her3KJPnnInVdo/exec'; // Replace this with your script URL
-        const form = document.forms['registrationForm'];
-        const submitButton = form.querySelector('button[type="submit"]');
-        const cooldownKey = 'lastRegistrationAttempt';
-        const cooldownTime = 10 * 1000;
-        const errorMessageDiv = document.getElementById('error-message');
-        const membersList = document.getElementById('members');
+        const attendanceForm = document.getElementById('attendance-form');
+        const thankYouMessage = document.getElementById('thank-you');
+        const attendanceList = document.getElementById('attendance-list');
+        const noAttendanceMessage = document.getElementById('no-attendance');
+        const nameInput = document.getElementById('name');
+        const classInput = document.getElementById('class');
+        const partyInput = document.getElementById('party');
+        const nameError = document.getElementById('name-error');
+        const classError = document.getElementById('class-error');
+        const partyError = document.getElementById('party-error');
 
-        function validateForm() {
-            const ingameName = document.forms["registrationForm"]["IngameName"].value;
-            const className = document.forms["registrationForm"]["Class"].value;
-            const party = document.forms["registrationForm"]["Party"].value;
+        let attendanceRecords = [];
 
-            if (ingameName == "") {
-              alert("Ingame Name must be filled out");
-              return false;
-            }
-            if (className == "") {
-                alert("Class must be selected");
+        function validateName() {
+            if (!nameInput.value.trim()) {
+                nameError.textContent = "Ingame Name is required";
+                nameError.style.display = "block";
                 return false;
             }
-             if (party == "") {
-                alert("Party must be selected");
-                return false;
-            }
+            nameError.style.display = "none";
             return true;
         }
 
-        function checkCooldown() {
-            const lastAttempt = localStorage.getItem(cooldownKey);
-            if (lastAttempt && Date.now() - lastAttempt < cooldownTime) {
-                const timeLeft = Math.ceil((cooldownTime - (Date.now() - lastAttempt)) / 1000);
-                submitButton.disabled = true;
-                submitButton.textContent = `Wait ${timeLeft}s`;
-                setTimeout(() => {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Register';
-                }, cooldownTime - (Date.now() - lastAttempt));
-                return true;
+        function validateClass() {
+            if (!classInput.value) {
+                classError.textContent = "Please select your class";
+                classError.style.display = "block";
+                return false;
             }
-            return false;
+            classError.style.display = "none";
+            return true;
         }
 
-        function displayError(message) {
-            errorMessageDiv.textContent = message;
+        function validateParty() {
+            if (partyInput.value && (parseInt(partyInput.value) < 1 || parseInt(partyInput.value) > 5)) {
+                partyError.textContent = "Party must be between 1 and 5";
+                partyError.style.display = "block";
+                return false;
+            }
+            partyError.style.display = "none";
+            return true;
         }
 
-        function fetchMemberList() {
-            membersList.innerHTML = '<li>Loading...</li>';
-            fetch(scriptURL + '?action=list')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data && data.result === 'success' && data.members) {
-                        membersList.innerHTML = '';
-                        if (data.members.length > 0) {
-                            data.members.forEach(member => {
-                                const listItem = document.createElement('li');
-                                listItem.textContent = `${member.IngameName} - ${member.Class} (${member.Party})`;
-                                membersList.appendChild(listItem);
-                            });
-                        } else {
-                            membersList.innerHTML = '<li>No members registered yet.</li>';
-                        }
-                    } else {
-                        membersList.innerHTML = '<li>Failed to load member list.</li>';
-                        if (data && data.error) {
-                            console.error('Error from Google Apps Script:', data.error);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching member list:', error);
-                    membersList.innerHTML = '<li>Failed to load member list.</li>';
-                });
-        }
+        nameInput.addEventListener('input', validateName);
+        classInput.addEventListener('change', validateClass);
+        partyInput.addEventListener('input', validateParty);
 
-        fetchMemberList();
+        attendanceForm.addEventListener('submit', (event) => {
+            event.preventDefault();
 
-        form.addEventListener('submit', e => {
-            e.preventDefault();
-
-            if (checkCooldown()) {
-                displayError('Please wait before submitting again.');
+            if (!validateName() || !validateClass() || !validateParty()) {
                 return;
             }
 
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
+            const name = nameInput.value.trim();
+            const className = classInput.value;
+            const party = partyInput.value ? parseInt(partyInput.value) : null;
 
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
+            const record = {
+                name: name,
+                class: className,
+                party: party,
+                timestamp: new Date().toLocaleString()
+            };
 
-            fetch(scriptURL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
-            })
+            attendanceRecords.push(record);
+            updateAttendanceList();
+            saveAttendanceToGitHub(attendanceRecords); // Save to GitHub
+
+            attendanceForm.style.display = 'none';
+            thankYouMessage.style.display = 'block';
+
+            setTimeout(() => {
+                thankYouMessage.style.display = 'none';
+                attendanceForm.style.display = 'block';
+                nameInput.value = '';
+                classInput.value = '';
+                partyInput.value = '';
+            }, 2000);
+        });
+
+        function updateAttendanceList() {
+            if (attendanceRecords.length === 0) {
+                noAttendanceMessage.style.display = 'block';
+                attendanceList.innerHTML = ''; // Clear the list
+            } else {
+                noAttendanceMessage.style.display = 'none';
+                attendanceList.innerHTML = attendanceRecords.map(record => `
+                    <li class="py-2">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-semibold">${record.name}</span> (${record.class})
+                                ${record.party ? `<span class="text-gray-500 ml-2">Party: ${record.party}</span>` : ''}
+                            </div>
+                            <span class="text-gray-400 text-sm">${record.timestamp}</span>
+                        </div>
+                    </li>
+                `).join('');
+            }
+        }
+
+        // Load attendance data from GitHub
+        function loadAttendanceFromGitHub() {
+            const githubRepo = 'your-username/your-repo-name'; // Replace with your repo
+            const filePath = 'attendance.json'; // Path to your JSON file
+            const rawUrl = `https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`;
+
+            fetch(rawUrl)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                        throw new Error(`Failed to fetch: ${response.status}`);
                     }
                     return response.json();
                 })
                 .then(data => {
-                    if (data && data.result === 'success') {
-                        alert('Thank you! Your registration has been submitted.');
-                        localStorage.setItem(cooldownKey, Date.now());
-                        form.reset();
-                        fetchMemberList();
-                    } else if (data && data.result === 'duplicate') {
-                        displayError('Error: Ingame Name already registered.');
+                    if (Array.isArray(data)) {
+                        attendanceRecords = data;
+                        updateAttendanceList();
                     } else {
-                        displayError('An error occurred. Please try again later.  Error from server: ' + data.error); // Include server error
-                        if (data && data.error) {
-                            console.error('Registration error from Google Apps Script:', data.error);
-                        }
+                        console.error('Data from GitHub is not an array:', data);
+                        attendanceRecords = [];
+                        updateAttendanceList();
                     }
                 })
                 .catch(error => {
-                    console.error('Registration error:', error);
-                    displayError('Network error. Please try again.');
-                })
-                .finally(() => {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Register';
-                    checkCooldown();
+                    console.error('Error loading attendance data:', error);
+                    // Initialize attendanceRecords as empty array to prevent errors
+                    attendanceRecords = [];
+                    updateAttendanceList();
                 });
-        });
+        }
+
+        // Save attendance data to GitHub
+        function saveAttendanceToGitHub(data) {
+            const githubRepo = 'your-username/your-repo-name'; // Replace with your repo
+            const filePath = 'attendance.json'; // Path to your JSON file
+            const accessToken = 'your-github-access-token'; // Replace with your token
+            // NEVER hardcode your access token in production code.  This is for demonstration only.
+            const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
+
+            const jsonData = JSON.stringify(data, null, 2);
+            const content = btoa(jsonData); // Encode to base64
+
+            // Check if the file exists to get its sha for updating
+            fetch(`https://api.github.com/repos/${githubRepo}/contents/${filePath}`, {
+                headers: {
+                    'Authorization': `token ${accessToken}`
+                }
+            })
+            .then(response => response.json())
+            .then(fileData => {
+                const sha = fileData.sha; // Get the sha
+                // Send the update request
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Update attendance data',
+                        content: content,
+                        sha: sha // Include the sha in the update request
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to update file: ${response.status}`);
+                    }
+                    console.log('Attendance data updated successfully on GitHub');
+                })
+                .catch(error => console.error('Error updating attendance data:', error));
+            })
+            .catch(error => {
+                console.error("Error getting file SHA:", error);
+                 // If the file doesn't exist, create it
+                fetch(url, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: 'Create attendance data',
+                        content: content
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Failed to create file: ${response.status}`);
+                    }
+                    console.log('Attendance data created successfully on GitHub');
+                })
+                .catch(error => console.error('Error creating attendance data:', error));
+            });
+        }
+
+        loadAttendanceFromGitHub(); // Load data when the page loads
+
     </script>
 </body>
 </html>
