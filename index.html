@@ -46,6 +46,15 @@
                     </select>
                     <div id="class-error" class="text-red-500 text-xs italic" style="display: none;"></div>
                 </div>
+                <div class="mb-4">
+                    <label for="party" class="block text-gray-700 text-sm font-bold mb-2">Party:</label>
+                    <select id="party" name="party" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                        <option value="">Select Party</option>
+                        <option value="puma">PUMA</option>
+                        <option value="tiger">TIGER</option>
+                    </select>
+                    <div id="party-error" class="text-red-500 text-xs italic" style="display: none;"></div>
+                </div>
                 <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline w-full">Submit Attendance</button>
             </form>
         </div>
@@ -83,8 +92,10 @@
         const noAttendanceMessage = document.getElementById('no-attendance');
         const nameInput = document.getElementById('name');
         const classInput = document.getElementById('class');
+        const partyInput = document.getElementById('party');
         const nameError = document.getElementById('name-error');
         const classError = document.getElementById('class-error');
+        const partyError = document.getElementById('party-error');
 
         let attendanceRecords = {
             puma: [],
@@ -111,31 +122,30 @@
             return true;
         }
 
+         function validateParty() {
+            if (!partyInput.value) {
+                partyError.textContent = "Please select your party";
+                partyError.style.display = "block";
+                return false;
+            }
+            partyError.style.display = "none";
+            return true;
+        }
+
         nameInput.addEventListener('input', validateName);
         classInput.addEventListener('change', validateClass);
+        partyInput.addEventListener('change', validateParty);
 
         attendanceForm.addEventListener('submit', (event) => {
             event.preventDefault();
 
-            if (!validateName() || !validateClass()) {
+            if (!validateName() || !validateClass() || !validateParty()) {
                 return;
             }
 
             const name = nameInput.value.trim();
             const className = classInput.value;
-
-            // Determine party assignment (PUMA or TIGER)
-            let assignedParty = '';
-            if (attendanceRecords.puma.length < 5) {
-                assignedParty = 'puma';
-            } else if (attendanceRecords.tiger.length < 5) {
-                assignedParty = 'tiger';
-            }
-             else if (attendanceRecords.puma.length <= attendanceRecords.tiger.length) {
-                assignedParty = 'puma';
-            } else {
-                assignedParty = 'tiger';
-            }
+            const party = partyInput.value;
 
             const record = {
                 name: name,
@@ -143,7 +153,7 @@
                 timestamp: new Date().toLocaleString()
             };
 
-            attendanceRecords[assignedParty].push(record); // Add to the correct party
+            attendanceRecords[party].push(record);
             updateAttendanceList();
             saveAttendanceToGitHub(attendanceRecords);
 
@@ -155,6 +165,7 @@
                 attendanceForm.style.display = 'block';
                 nameInput.value = '';
                 classInput.value = '';
+                partyInput.value = '';
             }, 2000);
         });
 
