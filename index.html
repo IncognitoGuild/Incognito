@@ -312,7 +312,7 @@
         function saveAttendanceToGitHub(data) {
             const githubRepo = 'IncognitoGuild/Incognito';
             const filePath = 'attendance.json';
-            const accessToken = 'ghp_your-github-access-token'; // IMPORTANT: Store this securely!
+            const accessToken = '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'; // IMPORTANT: Store this securely!
             const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
 
             const jsonData = JSON.stringify(data, null, 2);
