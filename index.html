@@ -16,8 +16,8 @@
 </head>
 <body class="bg-gray-100">
     <header class="bg-purple-600 text-white py-4 text-center rounded-md shadow-md">
-        <h1 class="text-2xl font-semibold">Guild Attendance</h1>
-        <p class="text-md">Record your attendance for guild events.</p>
+        <h1 class="text-2xl font-semibold">Incognito</h1>
+        <p class="text-md">Discord Attendance</p>
     </header>
 
     <main class="container mx-auto mt-8 p-4 rounded-md">
@@ -33,16 +33,19 @@
                     <label for="class" class="block text-gray-700 text-sm font-bold mb-2">Class:</label>
                     <select id="class" name="class" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                         <option value="">Select Class</option>
-                        <option value="Death Knight">Death Knight</option>
-                        <option value="Druid">Druid</option>
-                        <option value="Hunter">Hunter</option>
-                        <option value="Mage">Mage</option>
-                        <option value="Paladin">Paladin</option>
-                        <option value="Priest">Priest</option>
-                        <option value="Rogue">Rogue</option>
-                        <option value="Shaman">Shaman</option>
+                        <option value="Ranger">Ranger</option>
                         <option value="Warlock">Warlock</option>
-                        <option value="Warrior">Warrior</option>
+                        <option value="ArchBishop">ArchBishop</option>
+                        <option value="Sorcerer">Sorcerer</option>
+                        <option value="Minstrel">Minstrel</option>
+                        <option value="Guillotine Cross">Guillotine Cross</option>
+                        <option value="Mechanics">Mechanics</option>
+                        <option value="Wanderer">Wanderer</option>
+                        <option value="Royal Guard">Royal Guard</option>
+                        <option value="Rune Knigjt">Rune Knight</option>
+                        <option value="Shadow Chaser">Shadow Chaser</option>
+                        <option value="Shura">Shura</option>
+                        <option value="Genetic">Genetic</option>
                     </select>
                     <div id="class-error" class="text-red-500 text-xs italic" style="display: none;"></div>
                 </div>
@@ -52,6 +55,12 @@
                         <option value="">Select Party</option>
                         <option value="puma">PUMA</option>
                         <option value="tiger">TIGER</option>
+                        <option value="panda">PANDA</option>
+                        <option value="lion">LION</option>
+                        <option value="snake">SNAKE</option>
+                        <option value="rat">RAT</option>
+                        <option value="boss">BOSS</option>
+                        <option value="eagle">EAGLE</option>
                     </select>
                     <div id="party-error" class="text-red-500 text-xs italic" style="display: none;"></div>
                 </div>
@@ -65,16 +74,48 @@
         </div>
 
         <div id="attendance-data" class="bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-xl font-semibold mb-4 text-gray-800 text-center"> আজকের অ্যাটেন্ডেন্স শীট</h2>
-            <div id="puma-party" class="mb-4">
-                <h3 class="text-lg font-semibold text-blue-700">PUMA Party</h3>
-                <ul id="puma-list" class="divide-y divide-gray-200">
-                    </ul>
-            </div>
-            <div id="tiger-party">
-                <h3 class="text-lg font-semibold text-red-700">TIGER Party</h3>
-                <ul id="tiger-list" class="divide-y divide-gray-200">
-                    </ul>
+            <h2 class="text-xl font-semibold mb-4 text-gray-800 text-center">Incognito Party</h2>
+            <div class="flex flex-col md:flex-row gap-8">
+                <div id="puma-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-blue-700 mb-2">PUMA</h3>
+                    <ul id="puma-list" class="space-y-2">
+                        </ul>
+                </div>
+                <div id="tiger-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-red-700 mb-2">TIGER</h3>
+                    <ul id="tiger-list" class="space-y-2">
+                        </ul>
+                </div>
+                <div id="panda-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-green-700 mb-2">PANDA</h3>
+                    <ul id="panda-list" class="space-y-2">
+                        </ul>
+                </div>
+                <div id="lion-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-yellow-700 mb-2">LION</h3>
+                    <ul id="lion-list" class="space-y-2">
+                        </ul>
+                </div>
+                <div id="snake-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-indigo-700 mb-2">SNAKE</h3>
+                    <ul id="snake-list" class="space-y-2">
+                        </ul>
+                </div>
+                <div id="rat-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-pink-700 mb-2">RAT</h3>
+                    <ul id="rat-list" class="space-y-2">
+                        </ul>
+                </div>
+                <div id="boss-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2">BOSS</h3>
+                    <ul id="boss-list" class="space-y-2">
+                        </ul>
+                </div>
+                 <div id="eagle-party" class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold text-teal-700 mb-2">EAGLE</h3>
+                    <ul id="eagle-list" class="space-y-2">
+                        </ul>
+                </div>
             </div>
             <p id="no-attendance" class="text-gray-500 text-center">No attendance recorded yet.</p>
         </div>
@@ -89,6 +130,29 @@
         const thankYouMessage = document.getElementById('thank-you');
         const pumaList = document.getElementById('puma-list');
         const tigerList = document.getElementById('tiger-list');
+        const pandaList = document.getElementById('panda-list');
+        const lionList = document.getElementById('lion-list');
+        const snakeList = document.getElementById('snake-list');
+        const ratList = document.getElementById('rat-list');
+        const bossList = document<pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        const eagleList = document.getElementById('eagle-list');
         const noAttendanceMessage = document.getElementById('no-attendance');
         const nameInput = document.getElementById('name');
         const classInput = document.getElementById('class');
@@ -99,7 +163,13 @@
 
         let attendanceRecords = {
             puma: [],
-            tiger: []
+            tiger: [],
+            panda: [],
+            lion: [],
+            snake: [],
+            rat: [],
+            boss: [],
+            eagle: []
         };
 
         function validateName() {
@@ -122,7 +192,7 @@
             return true;
         }
 
-         function validateParty() {
+        function validateParty() {
             if (!partyInput.value) {
                 partyError.textContent = "Please select your party";
                 partyError.style.display = "block";
@@ -170,31 +240,43 @@
         });
 
         function updateAttendanceList() {
-            if (attendanceRecords.puma.length === 0 && attendanceRecords.tiger.length === 0) {
+            if (Object.values(attendanceRecords).every(arr => arr.length === 0)) {
                 noAttendanceMessage.style.display = 'block';
                 pumaList.innerHTML = '';
                 tigerList.innerHTML = '';
+                pandaList.innerHTML = '';
+                lionList.innerHTML = '';
+                snakeList.innerHTML = '';
+                ratList.innerHTML = '';
+                bossList.innerHTML = '';
+                eagleList.innerHTML = '';
             } else {
                 noAttendanceMessage.style.display = 'none';
 
-                pumaList.innerHTML = attendanceRecords.puma.map(record => `
-                    <li class="py-2">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">${record.name}</span> (${record.class})
-                            <span class="text-gray-400 text-sm">${record.timestamp}</span>
-                        </div>
-                    </li>
-                `).join('');
-
-                tigerList.innerHTML = attendanceRecords.tiger.map(record => `
-                    <li class="py-2">
-                        <div class="flex justify-between items-center">
-                            <span class="font-semibold">${record.name}</span> (${record.class})
-                            <span class="text-gray-400 text-sm">${record.timestamp}</span>
-                        </div>
-                    </li>
-                `).join('');
+                pumaList.innerHTML = formatList(attendanceRecords.puma.sort((a, b) => a.name.localeCompare(b.name)));
+                tigerList.innerHTML = formatList(attendanceRecords.tiger.sort((a, b) => a.name.localeCompare(b.name)));
+                pandaList.innerHTML = formatList(attendanceRecords.panda.sort((a, b) => a.name.localeCompare(b.name)));
+                lionList.innerHTML = formatList(attendanceRecords.lion.sort((a, b) => a.name.localeCompare(b.name)));
+                snakeList.innerHTML = formatList(attendanceRecords.snake.sort((a, b) => a.name.localeCompare(b.name)));
+                ratList.innerHTML = formatList(attendanceRecords.rat.sort((a, b) => a.name.localeCompare(b.name)));
+                bossList.innerHTML = formatList(attendanceRecords.boss.sort((a, b) => a.name.localeCompare(b.name)));
+                eagleList.innerHTML = formatList(attendanceRecords.eagle.sort((a, b) => a.name.localeCompare(b.name)));
             }
+        }
+
+        function formatList(records) {
+            let listString = '';
+            for (let i = 0; i < records.length; i++) {
+                const record = records[i];
+                const number = i + 1;
+                listString += `<li class="py-2">
+                                    <div class="flex flex-col items-start">
+                                        <span class="font-semibold">${number}. ${record.name}</span>
+                                        <span class="text-gray-400 text-sm mt-1">(${record.class})</span>
+                                     </div>
+                                  </li>`;
+            }
+            return listString;
         }
 
         // Load attendance data from GitHub
@@ -214,18 +296,24 @@
                     if (typeof data === 'object' && data !== null) {
                         attendanceRecords = {
                             puma: Array.isArray(data.puma) ? data.puma : [],
-                            tiger: Array.isArray(data.tiger) ? data.tiger : []
+                            tiger: Array.isArray(data.tiger) ? data.tiger : [],
+                            panda: Array.isArray(data.panda) ? data.panda : [],
+                            lion: Array.isArray(data.lion) ? data.lion : [],
+                            snake: Array.isArray(data.snake) ? data.snake : [],
+                            rat: Array.isArray(data.rat) ? data.rat : [],
+                            boss: Array.isArray(data.boss) ? data.boss : [],
+                            eagle: Array.isArray(data.eagle) ? data.eagle : []
                         };
-                       updateAttendanceList();
+                        updateAttendanceList();
                     } else {
                         console.error('Data from GitHub is not a valid object:', data);
-                        attendanceRecords = { puma: [], tiger: [] };
+                        attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
                         updateAttendanceList();
                     }
                 })
                 .catch(error => {
                     console.error('Error loading attendance data:', error);
-                    attendanceRecords = { puma: [], tiger: [] };
+                    attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
                     updateAttendanceList();
                 });
         }
