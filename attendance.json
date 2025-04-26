@@ -1,7 +1,7 @@
 <script>
 // Load attendance data from GitHub
 function loadAttendanceFromGitHub() {
-    const githubRepo = 'Incognito/Incognito';
+    const githubRepo = 'Incognitoguild/Incognito';
     const filePath = 'attendance.json';
     const rawUrl = `https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`;
 
