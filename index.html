@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Incognito</title>
+    <title>Guild Attendance</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,8 +16,8 @@
 </head>
 <body class="bg-gray-100">
     <header class="bg-purple-600 text-white py-4 text-center rounded-md shadow-md">
-        <h1 class="text-2xl font-semibold">Incognito</h1>
-        <p class="text-md">Discord Attendance.</p>
+        <h1 class="text-2xl font-semibold">Guild Attendance</h1>
+        <p class="text-md">Record your attendance for guild events.</p>
     </header>
 
     <main class="container mx-auto mt-8 p-4 rounded-md">
@@ -264,7 +264,7 @@
 
         // Load attendance data from GitHub
         function loadAttendanceFromGitHub() {
-            const githubRepo = 'your-username/your-repo-name';
+            const githubRepo = 'IncognitoGuild/Incognito';
             const filePath = 'attendance.json';
             const rawUrl = `https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`;
 
@@ -310,7 +310,7 @@
 
         // Save attendance data to GitHub
         function saveAttendanceToGitHub(data) {
-            const githubRepo = 'your-username/your-repo-name';
+            const githubRepo = 'IncognitoGuild/Incognito';
             const filePath = 'attendance.json';
             const accessToken = 'ghp_your-github-access-token'; // IMPORTANT: Store this securely!
             const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
