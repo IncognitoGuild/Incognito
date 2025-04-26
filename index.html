@@ -16,14 +16,14 @@
 </head>
 <body class="bg-gray-100">
     <header class="bg-purple-600 text-white py-4 text-center rounded-md shadow-md">
-        <h1 class="text-2xl font-semibold">Guild Attendance</h1>
-        <p class="text-md">Record your attendance for guild events.</p>
+        <h1 class="text-2xl font-semibold">Incognito</h1>
+        <p class="text-md">Discord Attendance.</p>
     </header>
 
     <main class="container mx-auto mt-8 p-4 rounded-md">
         <div id="attendance-form" class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h2 class="text-xl font-semibold mb-4 text-gray-800 text-center">Attendance Form</h2>
-            <form>
+            <form id="attendance-form-element">
                 <div class="mb-4">
                     <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Ingame Name:</label>
                     <input type="text" id="name" name="name" class="shadow appearance-none border rounded-full w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
@@ -122,11 +122,11 @@
     </main>
 
     <footer class="bg-gray-800 text-white py-4 text-center rounded-md mt-8">
-        <p>© 2024 Guild Attendance. All rights reserved.</p>
+        <p>© 2025 Incognito Guild. All rights reserved.</p>
     </footer>
 
     <script>
-        const attendanceForm = document.getElementById('attendance-form');
+        const attendanceForm = document.getElementById('attendance-form-element');
         const thankYouMessage = document.getElementById('thank-you');
         const pumaList = document.getElementById('puma-list');
         const tigerList = document.getElementById('tiger-list');
@@ -208,7 +208,7 @@
 
             attendanceRecords[party].push(record);
             updateAttendanceList();
-            saveAttendanceToGitHub(attendanceRecords);
+            saveAttendanceToSheets(attendanceRecords); // Changed to saveToSheets
 
             attendanceForm.style.display = 'none';
             thankYouMessage.style.display = 'block';
@@ -262,13 +262,13 @@
             return listString;
         }
 
-        // Load attendance data from GitHub
-        function loadAttendanceFromGitHub() {
-            const githubRepo = 'IncognitoGuild/Incognito';
-            const filePath = 'attendance.json';
-            const rawUrl = `https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`;
+        // Load attendance data from Google Sheets
+        function loadAttendanceFromSheets() {
+            const SPREADSHEET_ID = 'https://docs.google.com/spreadsheets/d/10OgFECoyXJSR7vHvjrJ9ZNmQy0YFb1FlmV6aGXQVp3Q/edit?gid=0#gid=0'; // Replace with your sheet ID
+            const SHEET_NAME = 'Sheet1'; // Replace with your sheet name
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${AIzaSyDPiwh4WSTsdt2MPA6OrJQLpXXU5uKYUMY}`; // Replace with your API key
 
-            fetch(rawUrl)
+            fetch(url)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error(`Failed to fetch: ${response.status}`);
@@ -276,25 +276,25 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (typeof data === 'object' && data !== null) {
-                        try {
-                            attendanceRecords = {
-                                puma: Array.isArray(data.puma) ? data.puma : [],
-                                tiger: Array.isArray(data.tiger) ? data.tiger : [],
-                                panda: Array.isArray(data.panda) ? data.panda : [],
-                                lion: Array.isArray(data.lion) ? data.lion : [],
-                                snake: Array.isArray(data.snake) ? data.snake : [],
-                                rat: Array.isArray(data.rat) ? data.rat : [],
-                                boss: Array.isArray(data.boss) ? data.boss : [],
-                                eagle: Array.isArray(data.eagle) ? data.eagle : []
-                            };
-                        } catch (e) {
-                            console.error('Error parsing data:', e);
-                            attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
-                        }
+                    if (data && data.values) {
+                        // Clear existing data
+                        attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
+                        // Process the data from the sheet
+                        data.values.slice(1).forEach(row => { // Skip the header row
+                            if (row[0] && row[1] && row[2]) { // Make sure required columns exist
+                                const name = row[0];
+                                const className = row[1];
+                                const party = row[2].toLowerCase(); // Important: make it lowercase to match our object keys
+                                const timestamp = row[3] || new Date().toLocaleString(); // Use provided or generate
+
+                                if (attendanceRecords[party]) { // Only add to valid parties
+                                    attendanceRecords[party].push({ name, class: className, timestamp });
+                                }
+                            }
+                        });
                         updateAttendanceList();
                     } else {
-                        console.error('Data from GitHub is not a valid object:', data);
+                        console.error('No data or invalid data received from Google Sheets');
                         attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
                         updateAttendanceList();
                     }
@@ -306,61 +306,48 @@
                 });
         }
 
+        // Save attendance data to Google Sheets
+        function saveAttendanceToSheets(data) {
+            const SPREADSHEET_ID = 'https://docs.google.com/spreadsheets/d/10OgFECoyXJSR7vHvjrJ9ZNmQy0YFb1FlmV6aGXQVp3Q/edit?gid=0#gid=0'; // Replace with your sheet ID
+            const SHEET_NAME = 'Sheet1'; // Replace with the sheet name
+            const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS&key=${YOUR_API_KEY}`; // Replace with your API key
 
+            // Prepare the data for sending to Google Sheets
+            const values = [];
+            for (const party in data) {
+                data[party].forEach(record => {
+                    values.push([record.name, record.class, party.toUpperCase(), record.timestamp]); // Changed to uppercase
+                });
+            }
 
-        // Save attendance data to GitHub
-        function saveAttendanceToGitHub(data) {
-            const githubRepo = 'IncognitoGuild/Incognito';
-            const filePath = 'attendance.json';
-            const accessToken = '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'; // IMPORTANT: Store this securely!
-            const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
+            const requestBody = {
+                values: values
+            };
 
-            const jsonData = JSON.stringify(data, null, 2);
-            const content = btoa(jsonData);
-
-            fetch(`https://api.github.com/repos/${githubRepo}/contents/${filePath}`, {
+            fetch(url, {
+                method: 'POST',
                 headers: {
-                    'Authorization': `token ${accessToken}`,
-                    'Accept': 'application/vnd.github.v3+json' // Add this line
-                }
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
             })
             .then(response => {
                 if (!response.ok) {
-                    return response.json().then(err => {  // Use return here
-                        throw new Error(`Failed to update file: ${response.status} - ${err.message}`);
+                    return response.json().then(err => {
+                        throw new Error(`Failed to update sheet: ${response.status} - ${err.error.message}`);
                     });
                 }
                 return response.json();
             })
-            .then(fileData => {
-                const sha = fileData.sha;
-                return fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${accessToken}`,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/vnd.github.v3+json' // Add this line
-                    },
-                    body: JSON.stringify({
-                        message: 'Update attendance data',
-                        content: content,
-                        sha: sha
-                    })
-                });
-            })
             .then(response => {
-                if (!response.ok) {
-                  return response.json().then(err => {
-                    throw new Error(`Failed to update file content: ${response.status} - ${err.message}`);
-                  });
-                }
-                console.log('Attendance data updated successfully on GitHub');
+                console.log('Attendance data updated successfully on Google Sheets:', response);
+                // Reload data after successful save to reflect changes
+                loadAttendanceFromSheets();
             })
             .catch(error => console.error('Error updating attendance data:', error));
         }
 
-        loadAttendanceFromGitHub();
-
+        loadAttendanceFromSheets(); // Load data on page load
     </script>
 </body>
 </html>
