@@ -1,103 +1,171 @@
 <script>
 // Load attendance data from GitHub
-function loadAttendanceFromGitHub() {
-    const githubRepo = 'IncognitoGuild/Incognito';
-    const filePath = 'attendance.json';
-    const rawUrl = `https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`;
+function loadAttendanceFromGitHub(")"{
+   "const githubRepo =""IncognitoGuild/Incognito"";
+    const filePath =""attendance.json"";
+    const rawUrl =""`https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`"";
 
     fetch(rawUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (typeof data === 'object' && data !== null) {
-                attendanceRecords = {
-                    puma: Array.isArray(data.puma) ? data.puma : [],
-                    tiger: Array.isArray(data.tiger) ? data.tiger : [],
-                    panda: Array.isArray(data.panda) ? data.panda : [],
-                    lion: Array.isArray(data.lion) ? data.lion : [],
-                    snake: Array.isArray(data.snake) ? data.snake : [],
-                    rat: Array.isArray(data.rat) ? data.rat : [],
-                    boss: Array.isArray(data.boss) ? data.boss : [],
-                    eagle: Array.isArray(data.eagle) ? data.eagle : []
-                };
-                updateAttendanceList();
-            } else {
-                console.error('Data from GitHub is not a valid object:', data);
-                attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
-                updateAttendanceList();
-            }
-        })
-        .catch(error => {
-            console.error('Error loading attendance data:', error);
-            attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
-            updateAttendanceList();
-        });
-}
+        .then(response =>"{
+      "if (!response.ok)"{
+         "throw new Error(""`Failed to fetch: ${response.status}`"");"
+      }"return response.json();"
+   }")
+        .then(data =>"{
+      "if (typeof data ===""object""&& data !== null)"{
+         "attendanceRecords ="{
+            "puma":"Array.isArray(data.puma) ? data.puma":[
+               
+            ],
+            "tiger":"Array.isArray(data.tiger) ? data.tiger":[
+               
+            ],
+            "panda":"Array.isArray(data.panda) ? data.panda":[
+               
+            ],
+            "lion":"Array.isArray(data.lion) ? data.lion":[
+               
+            ],
+            "snake":"Array.isArray(data.snake) ? data.snake":[
+               
+            ],
+            "rat":"Array.isArray(data.rat) ? data.rat":[
+               
+            ],
+            "boss":"Array.isArray(data.boss) ? data.boss":[
+               
+            ],
+            "eagle":"Array.isArray(data.eagle) ? data.eagle":[
+               
+            ]
+         }";
+                updateAttendanceList();"
+      }"else"{
+         "console.error(""Data from GitHub is not a valid object:",
+         "data);
+                attendanceRecords ="{
+            "puma":[
+               
+            ],
+            "tiger":[
+               
+            ],
+            "panda":[
+               
+            ],
+            "lion":[
+               
+            ],
+            "snake":[
+               
+            ],
+            "rat":[
+               
+            ],
+            "boss":[
+               
+            ],
+            "eagle":[
+               
+            ]
+         }";
+                updateAttendanceList();"
+      }
+   }")
+        .catch(error =>"{
+      "console.error(""Error loading attendance data:",
+      "error);
+            attendanceRecords ="{
+         "puma":[
+            
+         ],
+         "tiger":[
+            
+         ],
+         "panda":[
+            
+         ],
+         "lion":[
+            
+         ],
+         "snake":[
+            
+         ],
+         "rat":[
+            
+         ],
+         "boss":[
+            
+         ],
+         "eagle":[
+            
+         ]
+      }";
+            updateAttendanceList();"
+   }");"
+}{
+   "const githubRepo =""your-username/your-repo-name"";
+    const filePath =""attendance.json"";
+    const accessToken =""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"";
+    const url =""`https://api.github.com/repos/${githubRepo}/contents/${filePath}`"";
 
-// Save attendance data to GitHub
-function saveAttendanceToGitHub(data) {
-    const githubRepo = 'your-username/your-repo-name';
-    const filePath = 'attendance.json';
-    const accessToken = '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';
-    const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
-
-    const jsonData = JSON.stringify(data, null, 2);
+    const jsonData = JSON.stringify(data",
+   null,
+   2);
     const content = btoa(jsonData);
 
-    fetch(`https://api.github.com/repos/${githubRepo}/contents/${filePath}`, {
-        headers: {
-            'Authorization': `token ${accessToken}`
-        }
-    })
+    fetch("`https://api.github.com/repos/${githubRepo}/contents/${filePath}`",
+   {
+      "headers":{
+         "Authorization":"`token ${accessToken}`"
+      }
+   }")
     .then(response => response.json())
-    .then(fileData => {
-        const sha = fileData.sha;
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${accessToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Update attendance data',
-                content: content,
-                sha: sha
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to update file: ${response.status}`);
-            }
-            console.log('Attendance data updated successfully on GitHub');
-        })
-        .catch(error => console.error('Error updating attendance data:', error));
-    })
-    .catch(error => {
-        console.error("Error getting file SHA:", error);
-        fetch(url, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `token ${accessToken}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: 'Create attendance data',
-                content: content
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to create file: ${response.status}`);
-            }
-            console.log('Attendance data created successfully on GitHub');
-        })
-        .catch(error => console.error('Error creating attendance data:', error));
-    });
-}
-
-loadAttendanceFromGitHub();
-</script>
+    .then(fileData =>"{
+      "const sha = fileData.sha;
+        fetch(url",
+      {
+         "method":"PUT",
+         "headers":{
+            "Authorization":"`token ${accessToken}`",
+            "Content-Type":"application/json"
+         },
+         "body":"JSON.stringify("{
+            "message":"Update attendance data",
+            "content":"content",
+            "sha":"sha"
+         }")"
+      }")
+        .then(response =>"{
+         "if (!response.ok)"{
+            "throw new Error(""`Failed to update file: ${response.status}`"");"
+         }"console.log(""Attendance data updated successfully on GitHub"");"
+      }")
+        .catch(error => console.error(""Error updating attendance data:",
+      "error));"
+   }")
+    .catch(error =>"{
+      "console.error(""Error getting file SHA:",
+      "error);
+        fetch(url",
+      {
+         "method":"PUT",
+         "headers":{
+            "Authorization":"`token ${accessToken}`",
+            "Content-Type":"application/json"
+         },
+         "body":"JSON.stringify("{
+            "message":"Create attendance data",
+            "content":"content"
+         }")"
+      }")
+        .then(response =>"{
+         "if (!response.ok)"{
+            "throw new Error(""`Failed to create file: ${response.status}`"");"
+         }"console.log(""Attendance data created successfully on GitHub"");"
+      }")
+        .catch(error => console.error(""Error creating attendance data:",
+      "error));"
+   }");"
+}"loadAttendanceFromGitHub();
+</script>"
