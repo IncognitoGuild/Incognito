@@ -1,7 +1,7 @@
 <script>
 // Load attendance data from GitHub
 function loadAttendanceFromGitHub() {
-    const githubRepo = 'your-username/your-repo-name';
+    const githubRepo = 'Incognito/Incognito';
     const filePath = 'attendance.json';
     const rawUrl = `https://raw.githubusercontent.com/${githubRepo}/main/${filePath}`;
 
@@ -42,7 +42,7 @@ function loadAttendanceFromGitHub() {
 function saveAttendanceToGitHub(data) {
     const githubRepo = 'your-username/your-repo-name';
     const filePath = 'attendance.json';
-    const accessToken = 'your-github-access-token';
+    const accessToken = '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';
     const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
 
     const jsonData = JSON.stringify(data, null, 2);
