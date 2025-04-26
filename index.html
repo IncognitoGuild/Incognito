@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guild Attendance</title>
+    <title>Incognito</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
 <body class="bg-gray-100">
     <header class="bg-purple-600 text-white py-4 text-center rounded-md shadow-md">
         <h1 class="text-2xl font-semibold">Incognito</h1>
-        <p class="text-md">Discord Attendance</p>
+        <p class="text-md">Discord Attendance.</p>
     </header>
 
     <main class="container mx-auto mt-8 p-4 rounded-md">
@@ -134,24 +134,7 @@
         const lionList = document.getElementById('lion-list');
         const snakeList = document.getElementById('snake-list');
         const ratList = document.getElementById('rat-list');
-        const bossList = document<pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad><pad>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        const bossList = document.getElementById('boss-list');
         const eagleList = document.getElementById('eagle-list');
         const noAttendanceMessage = document.getElementById('no-attendance');
         const nameInput = document.getElementById('name');
@@ -294,16 +277,21 @@
                 })
                 .then(data => {
                     if (typeof data === 'object' && data !== null) {
-                        attendanceRecords = {
-                            puma: Array.isArray(data.puma) ? data.puma : [],
-                            tiger: Array.isArray(data.tiger) ? data.tiger : [],
-                            panda: Array.isArray(data.panda) ? data.panda : [],
-                            lion: Array.isArray(data.lion) ? data.lion : [],
-                            snake: Array.isArray(data.snake) ? data.snake : [],
-                            rat: Array.isArray(data.rat) ? data.rat : [],
-                            boss: Array.isArray(data.boss) ? data.boss : [],
-                            eagle: Array.isArray(data.eagle) ? data.eagle : []
-                        };
+                        try {
+                            attendanceRecords = {
+                                puma: Array.isArray(data.puma) ? data.puma : [],
+                                tiger: Array.isArray(data.tiger) ? data.tiger : [],
+                                panda: Array.isArray(data.panda) ? data.panda : [],
+                                lion: Array.isArray(data.lion) ? data.lion : [],
+                                snake: Array.isArray(data.snake) ? data.snake : [],
+                                rat: Array.isArray(data.rat) ? data.rat : [],
+                                boss: Array.isArray(data.boss) ? data.boss : [],
+                                eagle: Array.isArray(data.eagle) ? data.eagle : []
+                            };
+                        } catch (e) {
+                            console.error('Error parsing data:', e);
+                            attendanceRecords = { puma: [], tiger: [], panda: [], lion: [], snake: [], rat: [], boss: [], eagle: [] };
+                        }
                         updateAttendanceList();
                     } else {
                         console.error('Data from GitHub is not a valid object:', data);
@@ -324,7 +312,7 @@
         function saveAttendanceToGitHub(data) {
             const githubRepo = 'your-username/your-repo-name';
             const filePath = 'attendance.json';
-            const accessToken = 'your-github-access-token';
+            const accessToken = 'ghp_your-github-access-token'; // IMPORTANT: Store this securely!
             const url = `https://api.github.com/repos/${githubRepo}/contents/${filePath}`;
 
             const jsonData = JSON.stringify(data, null, 2);
@@ -332,53 +320,43 @@
 
             fetch(`https://api.github.com/repos/${githubRepo}/contents/${filePath}`, {
                 headers: {
-                    'Authorization': `token ${accessToken}`
+                    'Authorization': `token ${accessToken}`,
+                    'Accept': 'application/vnd.github.v3+json' // Add this line
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => {  // Use return here
+                        throw new Error(`Failed to update file: ${response.status} - ${err.message}`);
+                    });
+                }
+                return response.json();
+            })
             .then(fileData => {
                 const sha = fileData.sha;
-                fetch(url, {
+                return fetch(url, {
                     method: 'PUT',
                     headers: {
                         'Authorization': `token ${accessToken}`,
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json' // Add this line
                     },
                     body: JSON.stringify({
                         message: 'Update attendance data',
                         content: content,
                         sha: sha
                     })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to update file: ${response.status}`);
-                    }
-                    console.log('Attendance data updated successfully on GitHub');
-                })
-                .catch(error => console.error('Error updating attendance data:', error));
+                });
             })
-            .catch(error => {
-                console.error("Error getting file SHA:", error);
-                fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `token ${accessToken}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: 'Create attendance data',
-                        content: content
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Failed to create file: ${response.status}`);
-                    }
-                    console.log('Attendance data created successfully on GitHub');
-                })
-                .catch(error => console.error('Error creating attendance data:', error));
-            });
+            .then(response => {
+                if (!response.ok) {
+                  return response.json().then(err => {
+                    throw new Error(`Failed to update file content: ${response.status} - ${err.message}`);
+                  });
+                }
+                console.log('Attendance data updated successfully on GitHub');
+            })
+            .catch(error => console.error('Error updating attendance data:', error));
         }
 
         loadAttendanceFromGitHub();
